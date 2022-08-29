@@ -1,14 +1,10 @@
-import React from "react";
-import { TaskItemProps } from "../task-item";
-import styles from "./project.module.css";
+import React from 'react';
+import { TaskItemProps } from '../task-item';
+import styles from './project.module.css';
 
 export const Project: React.FC<TaskItemProps> = ({ task, isSelected }) => {
-  const barColor = isSelected
-    ? task.styles.backgroundSelectedColor
-    : task.styles.backgroundColor;
-  const processColor = isSelected
-    ? task.styles.progressSelectedColor
-    : task.styles.progressColor;
+  const barColor = isSelected ? task.styles.backgroundSelectedColor : task.styles.backgroundColor;
+  const processColor = isSelected ? task.styles.progressSelectedColor : task.styles.progressColor;
   const projectWith = task.x2 - task.x1;
 
   const projectLeftTriangle = [
@@ -18,7 +14,7 @@ export const Project: React.FC<TaskItemProps> = ({ task, isSelected }) => {
     task.y + task.height,
     task.x1 + 15,
     task.y + task.height / 2 - 1,
-  ].join(",");
+  ].join(',');
   const projectRightTriangle = [
     task.x2,
     task.y + task.height / 2 - 1,
@@ -26,7 +22,7 @@ export const Project: React.FC<TaskItemProps> = ({ task, isSelected }) => {
     task.y + task.height,
     task.x2 - 15,
     task.y + task.height / 2 - 1,
-  ].join(",");
+  ].join(',');
 
   return (
     <g tabIndex={0} className={styles.projectWrapper}>
@@ -59,16 +55,8 @@ export const Project: React.FC<TaskItemProps> = ({ task, isSelected }) => {
         ry={task.barCornerRadius}
         className={styles.projectTop}
       />
-      <polygon
-        className={styles.projectTop}
-        points={projectLeftTriangle}
-        fill={barColor}
-      />
-      <polygon
-        className={styles.projectTop}
-        points={projectRightTriangle}
-        fill={barColor}
-      />
+      <polygon className={styles.projectTop} points={projectLeftTriangle} fill={barColor} />
+      <polygon className={styles.projectTop} points={projectRightTriangle} fill={barColor} />
     </g>
   );
 };

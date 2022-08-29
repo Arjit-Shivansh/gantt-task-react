@@ -1,7 +1,7 @@
-import React, { ReactChild } from "react";
-import { Task } from "../../types/public-types";
-import { addToDate } from "../../helpers/date-helper";
-import styles from "./grid.module.css";
+import React, { ReactElement } from 'react';
+import { Task, ViewMode } from '../../types/public-types';
+import { addToDate, isHoliday } from '../../helpers/date-helper';
+import styles from './grid.module.css';
 
 export type GridBodyProps = {
   tasks: Task[];
@@ -10,6 +10,10 @@ export type GridBodyProps = {
   rowHeight: number;
   columnWidth: number;
   todayColor: string;
+  holidayColor: string;
+  viewMode: ViewMode;
+  weekDays: Array<number>;
+  holidayDates: Array<Date>;
   rtl: boolean;
 };
 export const GridBody: React.FC<GridBodyProps> = ({
@@ -19,24 +23,21 @@ export const GridBody: React.FC<GridBodyProps> = ({
   svgWidth,
   columnWidth,
   todayColor,
+  holidayColor,
+  weekDays,
+  holidayDates,
+  viewMode,
   rtl,
 }) => {
   let y = 0;
-  const gridRows: ReactChild[] = [];
-  const rowLines: ReactChild[] = [
-    <line
-      key="RowLineFirst"
-      x="0"
-      y1={0}
-      x2={svgWidth}
-      y2={0}
-      className={styles.gridRowLine}
-    />,
+  const gridRows: ReactElement[] = [];
+  const rowLines: ReactElement[] = [
+    <line key="RowLineFirst" x="0" y1={0} x2={svgWidth} y2={0} className={styles.gridRowLine} />,
   ];
   for (const task of tasks) {
     gridRows.push(
       <rect
-        key={"Row" + task.id}
+        key={'Row' + task.id}
         x="0"
         y={y}
         width={svgWidth}
@@ -46,7 +47,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
     );
     rowLines.push(
       <line
-        key={"RowLine" + task.id}
+        key={'RowLine' + task.id}
         x="0"
         y1={y + rowHeight}
         x2={svgWidth}
@@ -59,20 +60,21 @@ export const GridBody: React.FC<GridBodyProps> = ({
 
   const now = new Date();
   let tickX = 0;
-  const ticks: ReactChild[] = [];
-  let today: ReactChild = <rect />;
+  const ticks: ReactElement[] = [];
+  const workinDays: ReactElement[] = [];
+  let today: ReactElement = <rect />;
   for (let i = 0; i < dates.length; i++) {
     const date = dates[i];
     ticks.push(
-      <line
-        key={date.getTime()}
-        x1={tickX}
-        y1={0}
-        x2={tickX}
-        y2={y}
-        className={styles.gridTick}
-      />
+      <line key={date.getTime()} x1={tickX} y1={0} x2={tickX} y2={y} className={styles.gridTick} />
     );
+    if (
+      viewMode === 'Day' &&
+      (!weekDays.includes(date.getDay()) || isHoliday(date, holidayDates))
+    ) {
+      workinDays.push(<rect x={tickX} y={0} width={columnWidth} height={y} fill={holidayColor} />);
+    }
+
     if (
       (i + 1 !== dates.length &&
         date.getTime() < now.getTime() &&
@@ -81,21 +83,10 @@ export const GridBody: React.FC<GridBodyProps> = ({
       (i !== 0 &&
         i + 1 === dates.length &&
         date.getTime() < now.getTime() &&
-        addToDate(
-          date,
-          date.getTime() - dates[i - 1].getTime(),
-          "millisecond"
-        ).getTime() >= now.getTime())
+        addToDate(date, date.getTime() - dates[i - 1].getTime(), 'millisecond').getTime() >=
+          now.getTime())
     ) {
-      today = (
-        <rect
-          x={tickX}
-          y={0}
-          width={columnWidth}
-          height={y}
-          fill={todayColor}
-        />
-      );
+      today = <rect x={tickX} y={0} width={columnWidth} height={y} fill={todayColor} />;
     }
     // rtl for today
     if (
@@ -105,13 +96,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
       dates[i + 1].getTime() < now.getTime()
     ) {
       today = (
-        <rect
-          x={tickX + columnWidth}
-          y={0}
-          width={columnWidth}
-          height={y}
-          fill={todayColor}
-        />
+        <rect x={tickX + columnWidth} y={0} width={columnWidth} height={y} fill={todayColor} />
       );
     }
     tickX += columnWidth;
@@ -122,6 +107,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
       <g className="rowLines">{rowLines}</g>
       <g className="ticks">{ticks}</g>
       <g className="today">{today}</g>
+      <g className="weekends">{workinDays}</g>
     </g>
   );
 };

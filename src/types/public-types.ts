@@ -1,14 +1,17 @@
+import React from 'react';
+
 export enum ViewMode {
-  Hour = "Hour",
-  QuarterDay = "Quarter Day",
-  HalfDay = "Half Day",
-  Day = "Day",
+  Hour = 'Hour',
+  QuarterDay = 'Quarter Day',
+  HalfDay = 'Half Day',
+  Day = 'Day',
   /** ISO-8601 week */
-  Week = "Week",
-  Month = "Month",
-  Year = "Year",
+  Week = 'Week',
+  Month = 'Month',
+  Year = 'Year',
 }
-export type TaskType = "task" | "milestone" | "project";
+export type TaskType = 'task' | 'milestone' | 'project';
+export type EventChangeType = void | boolean | Promise<void> | Promise<boolean>;
 export interface Task {
   id: string;
   type: TaskType;
@@ -52,21 +55,15 @@ export interface EventOption {
   /**
    * Invokes on end and start time change. Chart undoes operation if method return false or error.
    */
-  onDateChange?: (
-    task: Task,
-    children: Task[]
-  ) => void | boolean | Promise<void> | Promise<boolean>;
+  onDateChange?: (task: Task, children: Task[]) => EventChangeType;
   /**
    * Invokes on progress change. Chart undoes operation if method return false or error.
    */
-  onProgressChange?: (
-    task: Task,
-    children: Task[]
-  ) => void | boolean | Promise<void> | Promise<boolean>;
+  onProgressChange?: (task: Task, children: Task[]) => EventChangeType;
   /**
    * Invokes on delete selected task. Chart undoes operation if method return false or error.
    */
-  onDelete?: (task: Task) => void | boolean | Promise<void> | Promise<boolean>;
+  onDelete?: (task: Task) => EventChangeType;
   /**
    * Invokes on expander on task list
    */
@@ -112,6 +109,9 @@ export interface StylingOption {
   arrowColor?: string;
   arrowIndent?: number;
   todayColor?: string;
+  holidayColor?: string;
+  weekDays?: Array<number>;
+  holidayDates?: Array<Date>;
   TooltipContent?: React.FC<{
     task: Task;
     fontSize: string;

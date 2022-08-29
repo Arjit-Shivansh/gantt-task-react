@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Task } from "../../types/public-types";
-import { BarTask } from "../../types/bar-task";
-import styles from "./tooltip.module.css";
+import React, { useRef, useEffect, useState } from 'react';
+import { Task } from '../../types/public-types';
+import { BarTask } from '../../types/bar-task';
+import styles from './tooltip.module.css';
 
 export type TooltipProps = {
   task: BarTask;
@@ -41,6 +41,34 @@ export const Tooltip: React.FC<TooltipProps> = ({
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [relatedY, setRelatedY] = useState(0);
   const [relatedX, setRelatedX] = useState(0);
+
+  const rtlEffect = (newRelatedY: number, tooltipWidth: number) => {
+    let newRelatedX = task.x1 - arrowIndent * 1.5 - tooltipWidth - scrollX;
+    if (newRelatedX < 0) {
+      newRelatedX = task.x2 + arrowIndent * 1.5 - scrollX;
+    }
+    const tooltipLeftmostPoint = tooltipWidth + newRelatedX;
+    if (tooltipLeftmostPoint > svgContainerWidth) {
+      newRelatedX = svgContainerWidth - tooltipWidth;
+      newRelatedY += rowHeight;
+    }
+    return { newRelatedX, newRelatedY };
+  };
+
+  const nonRtlEffect = (newRelatedY: number, tooltipWidth: number) => {
+    let newRelatedX = task.x2 + arrowIndent * 1.5 + taskListWidth - scrollX;
+    const tooltipLeftmostPoint = tooltipWidth + newRelatedX;
+    const fullChartWidth = taskListWidth + svgContainerWidth;
+    if (tooltipLeftmostPoint > fullChartWidth) {
+      newRelatedX = task.x1 + taskListWidth - arrowIndent * 1.5 - scrollX - tooltipWidth;
+    }
+    if (newRelatedX < taskListWidth) {
+      newRelatedX = svgContainerWidth + taskListWidth - tooltipWidth;
+      newRelatedY += rowHeight;
+    }
+    return { newRelatedX, newRelatedY };
+  };
+
   useEffect(() => {
     if (tooltipRef.current) {
       const tooltipHeight = tooltipRef.current.offsetHeight * 1.1;
@@ -49,31 +77,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
       let newRelatedY = task.index * rowHeight - scrollY + headerHeight;
       let newRelatedX: number;
       if (rtl) {
-        newRelatedX = task.x1 - arrowIndent * 1.5 - tooltipWidth - scrollX;
-        if (newRelatedX < 0) {
-          newRelatedX = task.x2 + arrowIndent * 1.5 - scrollX;
-        }
-        const tooltipLeftmostPoint = tooltipWidth + newRelatedX;
-        if (tooltipLeftmostPoint > svgContainerWidth) {
-          newRelatedX = svgContainerWidth - tooltipWidth;
-          newRelatedY += rowHeight;
-        }
+        const objectXY = rtlEffect(newRelatedY, tooltipWidth);
+        newRelatedX = objectXY?.newRelatedX;
+        newRelatedY = objectXY?.newRelatedY;
       } else {
-        newRelatedX = task.x2 + arrowIndent * 1.5 + taskListWidth - scrollX;
-        const tooltipLeftmostPoint = tooltipWidth + newRelatedX;
-        const fullChartWidth = taskListWidth + svgContainerWidth;
-        if (tooltipLeftmostPoint > fullChartWidth) {
-          newRelatedX =
-            task.x1 +
-            taskListWidth -
-            arrowIndent * 1.5 -
-            scrollX -
-            tooltipWidth;
-        }
-        if (newRelatedX < taskListWidth) {
-          newRelatedX = svgContainerWidth + taskListWidth - tooltipWidth;
-          newRelatedY += rowHeight;
-        }
+        const objectXY = nonRtlEffect(newRelatedY, tooltipWidth);
+        newRelatedX = objectXY?.newRelatedX;
+        newRelatedY = objectXY?.newRelatedY;
       }
 
       const tooltipLowerPoint = tooltipHeight + newRelatedY - scrollY;
@@ -100,11 +110,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   return (
     <div
       ref={tooltipRef}
-      className={
-        relatedX
-          ? styles.tooltipDetailsContainer
-          : styles.tooltipDetailsContainerHidden
-      }
+      className={relatedX ? styles.tooltipDetailsContainer : styles.tooltipDetailsContainerHidden}
       style={{ left: relatedX, top: relatedY }}
     >
       <TooltipContent task={task} fontSize={fontSize} fontFamily={fontFamily} />
@@ -123,9 +129,7 @@ export const StandardTooltipContent: React.FC<{
   };
   return (
     <div className={styles.tooltipDefaultContainer} style={style}>
-      <b style={{ fontSize: fontSize + 6 }}>{`${
-        task.name
-      }: ${task.start.getDate()}-${
+      <b style={{ fontSize: fontSize + 6 }}>{`${task.name}: ${task.start.getDate()}-${
         task.start.getMonth() + 1
       }-${task.start.getFullYear()} - ${task.end.getDate()}-${
         task.end.getMonth() + 1

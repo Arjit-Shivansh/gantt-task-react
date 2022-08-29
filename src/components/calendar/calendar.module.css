@@ -29,3 +29,7 @@
   stroke: #e0e0e0;
   stroke-width: 1.4;
 }
+
+.calendarTop {
+  fill: rgba(247, 248, 250, 1);
+}

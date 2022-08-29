@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { BarTask } from "../../types/bar-task";
-import { GanttContentMoveAction } from "../../types/gantt-task-actions";
-import { Bar } from "./bar/bar";
-import { BarSmall } from "./bar/bar-small";
-import { Milestone } from "./milestone/milestone";
-import { Project } from "./project/project";
-import style from "./task-list.module.css";
+import React, { useEffect, useRef, useState } from 'react';
+import { BarTask } from '../../types/bar-task';
+import { GanttContentMoveAction } from '../../types/gantt-task-actions';
+import { Bar } from './bar/bar';
+import { BarSmall } from './bar/bar-small';
+import { Milestone } from './milestone/milestone';
+import { Project } from './project/project';
+import style from './task-list.module.css';
 
 export type TaskItemProps = {
   task: BarTask;
@@ -23,16 +23,8 @@ export type TaskItemProps = {
   ) => any;
 };
 
-export const TaskItem: React.FC<TaskItemProps> = props => {
-  const {
-    task,
-    arrowIndent,
-    isDelete,
-    taskHeight,
-    isSelected,
-    rtl,
-    onEventStart,
-  } = {
+export const TaskItem: React.FC<TaskItemProps> = (props) => {
+  const { task, arrowIndent, isDelete, taskHeight, isSelected, rtl, onEventStart } = {
     ...props,
   };
   const textRef = useRef<SVGTextElement>(null);
@@ -41,13 +33,13 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
 
   useEffect(() => {
     switch (task.typeInternal) {
-      case "milestone":
+      case 'milestone':
         setTaskItem(<Milestone {...props} />);
         break;
-      case "project":
+      case 'project':
         setTaskItem(<Project {...props} />);
         break;
-      case "smalltask":
+      case 'smalltask':
         setTaskItem(<BarSmall {...props} />);
         break;
       default:
@@ -70,10 +62,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     }
     if (rtl && textRef.current) {
       return (
-        task.x1 -
-        textRef.current.getBBox().width -
-        arrowIndent * +hasChild -
-        arrowIndent * 0.2
+        task.x1 - textRef.current.getBBox().width - arrowIndent * +hasChild - arrowIndent * 0.2
       );
     } else {
       return task.x1 + width + arrowIndent * +hasChild + arrowIndent * 0.2;
@@ -82,40 +71,36 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
 
   return (
     <g
-      onKeyDown={e => {
+      onKeyDown={(e) => {
         switch (e.key) {
-          case "Delete": {
-            if (isDelete) onEventStart("delete", task, e);
+          case 'Delete': {
+            if (isDelete) onEventStart('delete', task, e);
             break;
           }
         }
         e.stopPropagation();
       }}
-      onMouseEnter={e => {
-        onEventStart("mouseenter", task, e);
+      onMouseEnter={(e) => {
+        onEventStart('mouseenter', task, e);
       }}
-      onMouseLeave={e => {
-        onEventStart("mouseleave", task, e);
+      onMouseLeave={(e) => {
+        onEventStart('mouseleave', task, e);
       }}
-      onDoubleClick={e => {
-        onEventStart("dblclick", task, e);
+      onDoubleClick={(e) => {
+        onEventStart('dblclick', task, e);
       }}
-      onClick={e => {
-        onEventStart("click", task, e);
+      onClick={(e) => {
+        onEventStart('click', task, e);
       }}
       onFocus={() => {
-        onEventStart("select", task);
+        onEventStart('select', task);
       }}
     >
       {taskItem}
       <text
         x={getX()}
         y={task.y + taskHeight * 0.5}
-        className={
-          isTextInside
-            ? style.barLabel
-            : style.barLabel && style.barLabelOutside
-        }
+        className={isTextInside ? style.barLabel : style.barLabel && style.barLabelOutside}
         ref={textRef}
       >
         {task.name}

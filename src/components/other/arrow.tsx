@@ -1,5 +1,5 @@
-import React from "react";
-import { BarTask } from "../../types/bar-task";
+import React from 'react';
+import { BarTask } from '../../types/bar-task';
 
 type ArrowProps = {
   taskFrom: BarTask;
@@ -56,11 +56,9 @@ const drownPathAndTriangle = (
   const taskToEndPosition = taskTo.y + taskHeight / 2;
   const taskFromEndPosition = taskFrom.x2 + arrowIndent * 2;
   const taskFromHorizontalOffsetValue =
-    taskFromEndPosition < taskTo.x1 ? "" : `H ${taskTo.x1 - arrowIndent}`;
+    taskFromEndPosition < taskTo.x1 ? '' : `H ${taskTo.x1 - arrowIndent}`;
   const taskToHorizontalOffsetValue =
-    taskFromEndPosition > taskTo.x1
-      ? arrowIndent
-      : taskTo.x1 - taskFrom.x2 - arrowIndent;
+    taskFromEndPosition > taskTo.x1 ? arrowIndent : taskTo.x1 - taskFrom.x2 - arrowIndent;
 
   const path = `M ${taskFrom.x2} ${taskFrom.y + taskHeight / 2} 
   h ${arrowIndent} 
@@ -86,11 +84,9 @@ const drownPathAndTriangleRTL = (
   const taskToEndPosition = taskTo.y + taskHeight / 2;
   const taskFromEndPosition = taskFrom.x1 - arrowIndent * 2;
   const taskFromHorizontalOffsetValue =
-    taskFromEndPosition > taskTo.x2 ? "" : `H ${taskTo.x2 + arrowIndent}`;
+    taskFromEndPosition > taskTo.x2 ? '' : `H ${taskTo.x2 + arrowIndent}`;
   const taskToHorizontalOffsetValue =
-    taskFromEndPosition < taskTo.x2
-      ? -arrowIndent
-      : taskTo.x2 - taskFrom.x1 + arrowIndent;
+    taskFromEndPosition < taskTo.x2 ? -arrowIndent : taskTo.x2 - taskFrom.x1 + arrowIndent;
 
   const path = `M ${taskFrom.x1} ${taskFrom.y + taskHeight / 2} 
   h ${-arrowIndent} 
