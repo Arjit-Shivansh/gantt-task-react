@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
-import styles from './task-list-table.module.css';
-import { Task } from '../../types/public-types';
+import React from "react";
+import styles from "./task-list-table.module.css";
+import { Task } from "../../types/public-types";
 
 const localeDateStringCache: any = {};
 const toLocaleDateStringFactory =
-  (locale: string) => (date: Date, dateTimeOptions: Intl.DateTimeFormatOptions) => {
+  (locale: string) =>
+  (date: Date, dateTimeOptions: Intl.DateTimeFormatOptions) => {
     const key = date.toString();
     let lds = localeDateStringCache[key];
     if (!lds) {
@@ -14,10 +15,10 @@ const toLocaleDateStringFactory =
     return lds;
   };
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
 };
 
 export const TaskListTableDefault: React.FC<{
@@ -30,8 +31,19 @@ export const TaskListTableDefault: React.FC<{
   selectedTaskId: string;
   setSelectedTask: (taskId: string) => void;
   onExpanderClick: (task: Task) => void;
-}> = ({ rowHeight, rowWidth, tasks, fontFamily, fontSize, locale, onExpanderClick }) => {
-  const toLocaleDateString = useMemo(() => toLocaleDateStringFactory(locale), [locale]);
+}> = ({
+  rowHeight,
+  rowWidth,
+  tasks,
+  fontFamily,
+  fontSize,
+  locale,
+  onExpanderClick,
+}) => {
+  const toLocaleDateString = React.useMemo(
+    () => toLocaleDateStringFactory(locale),
+    [locale]
+  );
 
   return (
     <div
@@ -41,16 +53,20 @@ export const TaskListTableDefault: React.FC<{
         fontSize: fontSize,
       }}
     >
-      {tasks.map((t) => {
-        let expanderSymbol = '';
+      {tasks.map(t => {
+        let expanderSymbol = "";
         if (t.hideChildren === false) {
-          expanderSymbol = '▼';
+          expanderSymbol = "▼";
         } else if (t.hideChildren === true) {
-          expanderSymbol = '▶';
+          expanderSymbol = "▶";
         }
 
         return (
-          <div className={styles.taskListTableRow} style={{ height: rowHeight }} key={`${t.id}row`}>
+          <div
+            className={styles.taskListTableRow}
+            style={{ height: rowHeight }}
+            key={`${t.id}row`}
+          >
             <div
               className={styles.taskListCell}
               style={{
@@ -62,7 +78,9 @@ export const TaskListTableDefault: React.FC<{
               <div className={styles.taskListNameWrapper}>
                 <div
                   className={
-                    expanderSymbol ? styles.taskListExpander : styles.taskListEmptyExpander
+                    expanderSymbol
+                      ? styles.taskListExpander
+                      : styles.taskListEmptyExpander
                   }
                   onClick={() => onExpanderClick(t)}
                 >
