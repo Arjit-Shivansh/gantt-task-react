@@ -35,6 +35,9 @@
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
   },
+  "peerDependencies": {
+    "react": "^17.0.0"
+  },
   "devDependencies": {
     "@types/node": "^15.0.1",
     "@types/react": "^17.0.38",
